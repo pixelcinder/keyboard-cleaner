@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Sandbox disabled — CGEventTap at cghidEventTap level and
+         AXIsProcessTrustedWithOptions(prompt:true) auto-registration both
+         require running outside the sandbox (same as Karabiner, BTT, etc.) -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+
+    <!-- Required for CGEventTap keyboard blocking -->
+    <!-- Note: CGEventTap at cghidEventTap level requires accessibility permission -->
+    <!-- The app will request this at runtime -->
+
+    <!-- Local authentication / Touch ID -->
+    <key>com.apple.security.personal-information.biometric-data</key>
+    <false/>
+
+    <!-- Network (not needed, disabled) -->
+    <key>com.apple.security.network.client</key>
+    <false/>
+</dict>
+</plist>

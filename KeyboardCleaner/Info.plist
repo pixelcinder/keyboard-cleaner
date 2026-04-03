@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIconFile</key>
+    <string></string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2025. All rights reserved.</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+
+    <!-- Accessibility permission for keyboard blocking -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Keyboard Cleaner needs accessibility access to block keyboard input while you clean your keyboard.</string>
+
+    <!-- Touch ID / biometrics -->
+    <key>NSFaceIDUsageDescription</key>
+    <string>Keyboard Cleaner uses Touch ID to unlock the keyboard after cleaning.</string>
+
+    <!-- Required for CGEvent tap -->
+    <key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
+    <array>
+        <string>com.apple.coreservices.uiagent</string>
+    </array>
+
+    <!-- Accessibility -->
+    <key>NSAccessibilityUsageDescription</key>
+    <string>Keyboard Cleaner requires accessibility permissions to intercept keyboard events and block all input while cleaning mode is active.</string>
+</dict>
+</plist>
