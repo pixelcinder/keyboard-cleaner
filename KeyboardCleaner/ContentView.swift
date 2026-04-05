@@ -1222,43 +1222,6 @@ private struct FallbackPill: View {
     }
 }
 
-// MARK: - Minimal Overlay Pill (shown when overlay style = Minimal)
-
-struct MinimalOverlayView: View {
-    @ObservedObject var cleaningState: CleaningStateManager
-
-    var body: some View {
-        HStack(spacing: 14) {
-            GlassCircle(diameter: 34) {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Design.accentGradient)
-                    .accessibilityHidden(true)
-            }
-            .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Keyboard Locked")
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.primary)
-                Text(cleaningState.elapsedTimeString)
-                    .font(.system(size: 11, design: .rounded).monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .contentTransition(.numericText())
-                    .animation(.easeInOut(duration: 0.35), value: cleaningState.elapsedSeconds)
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(AppStrings.keyboardLocked(cleaningState.elapsedTimeString))
-
-            Spacer()
-        }
-        .padding(.horizontal, 18)
-        .frame(width: 280, height: 78)
-        .background(GlassPanelBackground(cornerRadius: 20))
-        .accessibilityElement(children: .contain)
-    }
-}
-
 // MARK: - Touch ID Key Note
 
 private struct TouchIDKeyNote: View {

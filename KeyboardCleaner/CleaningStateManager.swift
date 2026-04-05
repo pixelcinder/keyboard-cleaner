@@ -644,25 +644,18 @@ final class OverlayWindowController {
 
     func show(cleaningState: CleaningStateManager, style: OverlayStyle, coverage: FullScreenCoverage) {
         guard windows.isEmpty else { return }
-        switch style {
-        case .full:
-            let screens: [NSScreen]
-            switch coverage {
-            case .allDisplays:
-                screens = NSScreen.screens
-            case .activeDisplay:
-                screens = [activeScreen()]
-            }
+        guard style == .full else { return }
 
-            for (index, screen) in screens.enumerated() {
-                let window = makeFullWindow(for: screen, cleaningState: cleaningState)
-                if index == 0 { window.makeKeyAndOrderFront(nil) } else { window.orderFront(nil) }
-                windows.append(window)
-            }
-        case .minimal:
-            let panel = makeMinimalPanel(cleaningState: cleaningState)
-            panel.orderFront(nil)
-            windows.append(panel)
+        let screens: [NSScreen]
+        switch coverage {
+        case .allDisplays:  screens = NSScreen.screens
+        case .activeDisplay: screens = [activeScreen()]
+        }
+
+        for (index, screen) in screens.enumerated() {
+            let window = makeFullWindow(for: screen, cleaningState: cleaningState)
+            if index == 0 { window.makeKeyAndOrderFront(nil) } else { window.orderFront(nil) }
+            windows.append(window)
         }
     }
 
@@ -671,31 +664,7 @@ final class OverlayWindowController {
         windows.removeAll()
     }
 
-    private func makeMinimalPanel(cleaningState: CleaningStateManager) -> NSPanel {
-        let size = CGSize(
-            width: 280,
-            height: 78
-        )
-        let screen = activeScreen()
-        let origin = CGPoint(
-            x: screen.visibleFrame.maxX - size.width - 24,
-            y: screen.visibleFrame.minY + 24
-        )
-        let panel = NSPanel(
-            contentRect: CGRect(origin: origin, size: size),
-            styleMask: [.borderless, .nonactivatingPanel],
-            backing: .buffered,
-            defer: false
-        )
-        panel.level = .floating
-        panel.isOpaque = false
-        panel.backgroundColor = .clear
-        panel.isReleasedWhenClosed = false
-        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        panel.isMovableByWindowBackground = true
-        panel.contentView = NSHostingView(rootView: MinimalOverlayView(cleaningState: cleaningState))
-        return panel
-    }
+
 
     private func makeFullWindow(for screen: NSScreen, cleaningState: CleaningStateManager) -> NSWindow {
         let window = NSWindow(
