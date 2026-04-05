@@ -211,16 +211,15 @@ final class CleaningStateManager: ObservableObject {
         soundEnabled      = UserDefaults.standard.bool(forKey: "soundEnabled")
         menuBarOnly       = UserDefaults.standard.bool(forKey: "menuBarOnly")
         autoUnlockTimeout = AutoUnlockTimeout(rawValue: UserDefaults.standard.integer(forKey: "autoUnlockTimeout")) ?? .fiveMinutes
-        let legacyPin = UserDefaults.standard.string(forKey: "pinCode") ?? ""
-        let keychainPin = PinKeychainStore.loadPin()
-        storedPin         = keychainPin ?? legacyPin
+        // Migrate any PIN that was stored in Keychain back to UserDefaults
+        if let keychainPin = PinKeychainStore.loadPin(), !keychainPin.isEmpty {
+            UserDefaults.standard.set(keychainPin, forKey: "pinCode")
+            PinKeychainStore.deletePin()
+        }
+        let savedPin = UserDefaults.standard.string(forKey: "pinCode") ?? ""
+        storedPin         = savedPin
         pinEnabled        = !storedPin.isEmpty
         hasCompletedLockTest = UserDefaults.standard.bool(forKey: "hasCompletedLockTest")
-
-        if keychainPin == nil, !legacyPin.isEmpty {
-            PinKeychainStore.savePin(legacyPin)
-            UserDefaults.standard.removeObject(forKey: "pinCode")
-        }
 
         // Persist settings changes via Combine (dropFirst skips the initial emission)
         $overlayStyle.dropFirst()
@@ -392,14 +391,12 @@ final class CleaningStateManager: ObservableObject {
     func setPin(_ pin: String) {
         storedPin = pin
         pinEnabled = true
-        PinKeychainStore.savePin(pin)
-        UserDefaults.standard.removeObject(forKey: "pinCode")
+        UserDefaults.standard.set(pin, forKey: "pinCode")
     }
 
     func clearPin() {
         storedPin = ""
         pinEnabled = false
-        PinKeychainStore.deletePin()
         UserDefaults.standard.removeObject(forKey: "pinCode")
     }
 
