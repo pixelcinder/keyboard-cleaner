@@ -1226,94 +1226,36 @@ private struct FallbackPill: View {
 
 struct MinimalOverlayView: View {
     @ObservedObject var cleaningState: CleaningStateManager
-    @State private var pinEntry = ""
-    @State private var pinFailed = false
-    @State private var pinLockoutMessage: String? = nil
-
-    // Show PIN pad when a PIN is set — serves as fallback to Touch ID (main window)
-    // or primary unlock when no Touch ID is available.
-    private var showPINSection: Bool { cleaningState.pinEnabled }
 
     var body: some View {
-        VStack(spacing: showPINSection ? 14 : 0) {
-            HStack(spacing: 14) {
-                GlassCircle(diameter: 34) {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Design.accentGradient)
-                        .accessibilityHidden(true)
-                }
-                .accessibilityHidden(true)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Keyboard Locked")
-                        .font(.system(size: 12, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.primary)
-                    Text(subtitleText)
-                        .font(.system(size: 11, design: .rounded).monospacedDigit())
-                        .foregroundStyle(.secondary)
-                        .contentTransition(.numericText())
-                        .animation(.easeInOut(duration: 0.35), value: cleaningState.elapsedSeconds)
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel(AppStrings.keyboardLocked(subtitleText))
-
-                Spacer()
+        HStack(spacing: 14) {
+            GlassCircle(diameter: 34) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(Design.accentGradient)
+                    .accessibilityHidden(true)
             }
+            .accessibilityHidden(true)
 
-            if showPINSection {
-                PINPadView(
-                    entry: $pinEntry,
-                    onComplete: submitPIN,
-                    onCancel: {
-                        pinEntry = ""
-                        pinFailed = false
-                        pinLockoutMessage = nil
-                    },
-                    lockedOutMessage: pinLockoutMessage
-                )
-                .padding(.bottom, 2)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Keyboard Locked")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.primary)
+                Text(cleaningState.elapsedTimeString)
+                    .font(.system(size: 11, design: .rounded).monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .contentTransition(.numericText())
+                    .animation(.easeInOut(duration: 0.35), value: cleaningState.elapsedSeconds)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(AppStrings.keyboardLocked(cleaningState.elapsedTimeString))
+
+            Spacer()
         }
         .padding(.horizontal, 18)
-        .padding(.vertical, showPINSection ? 14 : 0)
-        .frame(width: 280, height: showPINSection ? 300 : 78)
+        .frame(width: 280, height: 78)
         .background(GlassPanelBackground(cornerRadius: 20))
         .accessibilityElement(children: .contain)
-    }
-
-    private var subtitleText: String {
-        if showPINSection {
-            return pinFailed ? "Incorrect PIN. Try again." : "Enter PIN to unlock"
-        }
-        return cleaningState.elapsedTimeString
-    }
-
-    private func submitPIN() {
-        if cleaningState.isPINLockedOut {
-            if let until = cleaningState.pinLockedUntil {
-                let remaining = max(0, Int(until.timeIntervalSinceNow.rounded(.up)))
-                pinLockoutMessage = "Too many attempts. Try again in \(remaining)s."
-            }
-            pinEntry = ""
-            return
-        }
-        if cleaningState.verifyPin(pinEntry) {
-            cleaningState.unlockWithVerifiedPIN()
-            pinEntry = ""
-            pinFailed = false
-            pinLockoutMessage = nil
-        } else {
-            if cleaningState.isPINLockedOut, let until = cleaningState.pinLockedUntil {
-                let remaining = max(0, Int(until.timeIntervalSinceNow.rounded(.up)))
-                pinLockoutMessage = "Too many attempts. Try again in \(remaining)s."
-            }
-            pinFailed = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                pinEntry = ""
-                pinFailed = false
-            }
-        }
     }
 }
 
@@ -2192,30 +2134,67 @@ private struct DiagnosticsSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SheetHeaderView(title: "Diagnostics", subtitle: nil) { EmptyView() }
+            SheetHeaderView(
+                title: "Diagnostics",
+                subtitle: "Current state of permissions and app configuration."
+            ) { EmptyView() }
 
-            List {
-                Section {
-                    ForEach(Array(cleaningState.diagnosticsItems.enumerated()), id: \.offset) { _, item in
-                        HStack {
-                            Text(item.label)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(item.value)
-                                .fontWeight(.semibold)
+            ZStack {
+                AquaBackgroundView()
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ForEach(Array(cleaningState.diagnosticsItems.enumerated()), id: \.offset) { index, item in
+                            HStack(spacing: 12) {
+                                Text(item.label)
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                HStack(spacing: 5) {
+                                    Circle()
+                                        .fill(statusColor(for: item.value))
+                                        .frame(width: 6, height: 6)
+                                        .accessibilityHidden(true)
+                                    Text(item.value)
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(statusColor(for: item.value))
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel(AppStrings.diagnosticsRow(item.label, item.value))
+
+                            if index < cleaningState.diagnosticsItems.count - 1 {
+                                Rectangle()
+                                    .fill(.primary.opacity(0.07))
+                                    .frame(height: 0.5)
+                                    .padding(.leading, 16)
+                                    .accessibilityHidden(true)
+                            }
                         }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityLabel(AppStrings.diagnosticsRow(item.label, item.value))
                     }
+                    .background(GlassPanelBackground(cornerRadius: Design.cardRadius))
+                    .padding(20)
                 }
             }
-            .listStyle(.inset(alternatesRowBackgrounds: false))
-            .scrollContentBackground(.hidden)
-            .background(AquaBackgroundView())
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(width: 440, height: 480)
+        .frame(width: 400, height: 420)
         .accessibilityElement(children: .contain)
+    }
+
+    private func statusColor(for value: String) -> Color {
+        switch value {
+        case "Granted", "Installed", "Completed", "On":
+            return Design.accentStart
+        case "Missing", "Inactive", "Pending":
+            return Color(red: 0.90, green: 0.35, blue: 0.25)
+        case "Off":
+            return .secondary
+        default:
+            return .primary
+        }
     }
 }
 
@@ -2338,7 +2317,7 @@ private struct HelpCard: View {
             }
 
             // Items card
-            InsetGroup(spacing: 0) {
+            VStack(spacing: 0) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     HStack(alignment: .top, spacing: 10) {
                         Circle()
@@ -2350,16 +2329,23 @@ private struct HelpCard: View {
                             .font(.system(size: 13))
                             .foregroundStyle(.primary)
                             .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
                     .accessibilityElement(children: .combine)
 
                     if index < items.count - 1 {
-                        InsetDivider()
+                        Rectangle()
+                            .fill(.primary.opacity(0.07))
+                            .frame(height: 0.5)
+                            .padding(.leading, 29)
+                            .accessibilityHidden(true)
                     }
                 }
             }
+            .frame(maxWidth: .infinity)
+            .background(GlassPanelBackground(cornerRadius: Design.cardRadius))
         }
         .accessibilityElement(children: .contain)
     }

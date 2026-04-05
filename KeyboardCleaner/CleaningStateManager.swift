@@ -674,7 +674,7 @@ final class OverlayWindowController {
     private func makeMinimalPanel(cleaningState: CleaningStateManager) -> NSPanel {
         let size = CGSize(
             width: 280,
-            height: cleaningState.pinEnabled ? 300 : 78
+            height: 78
         )
         let screen = activeScreen()
         let origin = CGPoint(
