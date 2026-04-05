@@ -295,7 +295,7 @@ private struct IdleView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Spacer().frame(height: 86)
+            Spacer().frame(height: 24)
 
             // Icon + title
             VStack(spacing: 16) {
@@ -1271,15 +1271,9 @@ struct MinimalOverlayView: View {
 
                 Spacer()
 
-                if cleaningState.preferredUnlockMethod == .pin {
-                    Text("PIN")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Design.accentEnd)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(GlassCapsuleBackground())
-                        .accessibilityHidden(true)
-                } else {
+                // PIN mode: no button needed — the pad below is the action
+                // Touch ID / password mode: tap to authenticate
+                if cleaningState.preferredUnlockMethod != .pin {
                     Button {
                         if cleaningState.preferredUnlockMethod == .password {
                             cleaningState.authenticateToUnlock(usePassword: true) { _ in }
@@ -1316,7 +1310,7 @@ struct MinimalOverlayView: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, cleaningState.preferredUnlockMethod == .pin ? 14 : 0)
-        .frame(width: 280, height: cleaningState.preferredUnlockMethod == .pin ? 248 : 78)
+        .frame(width: 280, height: cleaningState.preferredUnlockMethod == .pin ? 300 : 78)
         .background(GlassPanelBackground(cornerRadius: 20))
         .accessibilityElement(children: .contain)
     }
@@ -1777,94 +1771,101 @@ struct OverlayView: View {
         ZStack {
             OverlayBackgroundView()
 
-            VStack(spacing: 0) {
-                Spacer()
+            // GeometryReader centers content when it fits; ScrollView handles small screens
+            GeometryReader { geo in
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        Spacer(minLength: 32)
 
-                ZStack {
-                    PulseRings(animating: pulseAnimation, count: 3,
-                               baseSize: 150, step: 46, maxOpacity: 0.05)
-                    GlassCircle(diameter: 130) {
-                        LockIconView(closed: lockClosed, size: 48)
-                    }
-                }
-                .onAppear {
-                    pulseAnimation = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { lockClosed = true }
-                }
-                .onChange(of: cleaningState.authState) { _, new in
-                    if new == .success {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) { lockClosed = false }
-                    }
-                }
-                .accessibilityLabel("Keyboard is locked")
-                .padding(.bottom, 24)
+                        ZStack {
+                            PulseRings(animating: pulseAnimation, count: 3,
+                                       baseSize: 100, step: 28, maxOpacity: 0.05)
+                            GlassCircle(diameter: 96) {
+                                LockIconView(closed: lockClosed, size: 36)
+                            }
+                        }
+                        .onAppear {
+                            pulseAnimation = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { lockClosed = true }
+                        }
+                        .onChange(of: cleaningState.authState) { _, new in
+                            if new == .success {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) { lockClosed = false }
+                            }
+                        }
+                        .accessibilityLabel("Keyboard is locked")
+                        .padding(.bottom, 20)
 
-                VStack(spacing: 24) {
-                    VStack(spacing: 12) {
-                        HStack(alignment: .lastTextBaseline, spacing: 5) {
-                            Text("Keyboard")
-                                .font(.system(size: 20, weight: .medium))
+                        VStack(spacing: 20) {
+                            VStack(spacing: 12) {
+                                HStack(alignment: .lastTextBaseline, spacing: 5) {
+                                    Text("Keyboard")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundStyle(.secondary)
+                                    Text("Locked")
+                                        .font(.system(size: 38, weight: .black))
+                                        .tracking(-0.8)
+                                        .foregroundStyle(Design.accentGradient)
+                                }
+                                .accessibilityElement(children: .ignore)
+                                .accessibilityLabel("Keyboard Locked")
+                                .accessibilityAddTraits(.isHeader)
+
+                                HStack(spacing: 6) {
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .accessibilityHidden(true)
+                                    Text("Wipe with confidence")
+                                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                                }
                                 .foregroundStyle(.secondary)
-                            Text("Locked")
-                                .font(.system(size: 38, weight: .black))
-                                .tracking(-0.8)
-                                .foregroundStyle(Design.accentGradient)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 7)
+                                .background(GlassCapsuleBackground())
+                            }
+
+                            if cleaningState.autoUnlockTimeout != .never {
+                                CountdownRingView(cleaningState: cleaningState)
+                            } else {
+                                OverlayElapsedView(cleaningState: cleaningState)
+                            }
                         }
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Keyboard Locked")
-                        .accessibilityAddTraits(.isHeader)
+                        .padding(.horizontal, 34)
+                        .padding(.vertical, 24)
+                        .background(GlassPanelBackground(cornerRadius: 30))
+                        .padding(.horizontal, 32)
+                        .accessibilitySortPriority(2)
 
-                        HStack(spacing: 6) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 12, weight: .medium))
-                                .accessibilityHidden(true)
-                            Text("Wipe with confidence")
-                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                        Spacer(minLength: 24)
+
+                        VStack(spacing: 14) {
+                            UnlockButton(cleaningState: cleaningState, onFailure: triggerErrorShake)
+                                .offset(x: errorShake ? -8 : 0)
+                                .animation(
+                                    errorShake
+                                        ? .easeInOut(duration: Timing.errorShakeUnit)
+                                            .repeatCount(Timing.errorShakeRepeat, autoreverses: true)
+                                        : .default,
+                                    value: errorShake
+                                )
+
+                            if cleaningState.hasTouchID {
+                                TouchIDKeyNote()
+                            }
                         }
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 7)
-                        .background(GlassCapsuleBackground())
-                    }
+                        .padding(.horizontal, 28)
+                        .padding(.vertical, 20)
+                        .background(GlassPanelBackground(cornerRadius: 28))
+                        .padding(.horizontal, 28)
+                        .accessibilitySortPriority(1)
 
-                    if cleaningState.autoUnlockTimeout != .never {
-                        CountdownRingView(cleaningState: cleaningState)
-                    } else {
-                        OverlayElapsedView(cleaningState: cleaningState)
+                        Spacer(minLength: 32)
                     }
+                    // minHeight ensures Spacers expand to center content when it fits
+                    .frame(maxWidth: .infinity, minHeight: geo.size.height)
                 }
-                .padding(.horizontal, 34)
-                .padding(.vertical, 28)
-                .background(GlassPanelBackground(cornerRadius: 30))
-                .padding(.horizontal, 32)
-                .accessibilitySortPriority(2)
-
-                Spacer(minLength: 32)
-
-                VStack(spacing: 14) {
-                    UnlockButton(cleaningState: cleaningState, onFailure: triggerErrorShake)
-                        .offset(x: errorShake ? -8 : 0)
-                        .animation(
-                            errorShake
-                                ? .easeInOut(duration: Timing.errorShakeUnit)
-                                    .repeatCount(Timing.errorShakeRepeat, autoreverses: true)
-                                : .default,
-                            value: errorShake
-                        )
-
-                    if cleaningState.hasTouchID {
-                        TouchIDKeyNote()
-                    }
-                }
-                .padding(.horizontal, 28)
-                .padding(.vertical, 20)
-                .background(GlassPanelBackground(cornerRadius: 28))
-                .padding(.horizontal, 28)
-                .accessibilitySortPriority(1)
-
-                Spacer(minLength: 40)
+                .scrollBounceBehavior(.basedOnSize)
             }
-            .frame(maxWidth: .infinity)
         }
         .ignoresSafeArea()
     }
@@ -1893,15 +1894,15 @@ private struct CountdownRingView: View {
                 Circle()
                     .fill(RadialGradient(
                         colors: [Design.accentEnd.opacity(0.14), .clear],
-                        center: .center, startRadius: 0, endRadius: 120))
-                    .frame(width: 250, height: 250)
-                    .blur(radius: 28)
+                        center: .center, startRadius: 0, endRadius: 90))
+                    .frame(width: 180, height: 180)
+                    .blur(radius: 22)
                     .accessibilityHidden(true)
 
                 // Track (decorative)
                 Circle()
                     .stroke(.primary.opacity(0.06), lineWidth: 5)
-                    .frame(width: 200, height: 200)
+                    .frame(width: 150, height: 150)
                     .accessibilityHidden(true)
 
                 // Progress arc (decorative)
@@ -1909,7 +1910,7 @@ private struct CountdownRingView: View {
                     .trim(from: 0, to: progress)
                     .stroke(Design.accentGradient,
                             style: StrokeStyle(lineWidth: 5, lineCap: .round))
-                    .frame(width: 200, height: 200)
+                    .frame(width: 150, height: 150)
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 1), value: progress)
                     .accessibilityHidden(true)
