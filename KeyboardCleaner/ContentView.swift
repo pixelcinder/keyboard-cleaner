@@ -73,7 +73,6 @@ struct ContentView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea()
         .animation(.spring(response: 0.45, dampingFraction: 0.82), value: cleaningState.isAccessibilityAuthorized)
         .animation(.spring(response: 0.45, dampingFraction: 0.82), value: cleaningState.isLocked)
         .animation(.spring(response: 0.45, dampingFraction: 0.82), value: hasSeenOnboarding)
@@ -142,7 +141,7 @@ private struct SceneScrollView<Content: View>: View {
 
 // MARK: - Accessibility Permission Gate
 
-struct AccessibilityPermissionView: View {
+private struct AccessibilityPermissionView: View {
     @ObservedObject var cleaningState: CleaningStateManager
     @State private var didCheck = false
     @State private var checkFailed = false
@@ -260,7 +259,7 @@ struct AccessibilityPermissionView: View {
     }
 }
 
-struct PermissionStepRow: View {
+private struct PermissionStepRow: View {
     let number: String
     let text: String
 
@@ -290,7 +289,7 @@ struct PermissionStepRow: View {
 
 // MARK: - Idle / Home Screen
 
-struct IdleView: View {
+private struct IdleView: View {
     @ObservedObject var cleaningState: CleaningStateManager
     @Binding var showSettings: Bool
 
@@ -466,7 +465,6 @@ private struct QuickLockTestRow: View {
                 .padding(.vertical, 8)
                 .background(GlassCapsuleBackground())
                 .accessibilityLabel("Run a quick lock test")
-                .keyboardShortcut(.defaultAction)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -555,7 +553,7 @@ private struct GlassSegmentedControl<T: Hashable>: View {
 
 // MARK: - Auto-Unlock Picker Row
 
-struct AutoUnlockPickerRow: View {
+private struct AutoUnlockPickerRow: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     var body: some View {
@@ -588,7 +586,7 @@ struct AutoUnlockPickerRow: View {
 
 // MARK: - Overlay Style Row
 
-struct OverlayStyleRow: View {
+private struct OverlayStyleRow: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     var body: some View {
@@ -619,7 +617,7 @@ struct OverlayStyleRow: View {
     }
 }
 
-struct FullScreenCoverageRow: View {
+private struct FullScreenCoverageRow: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     var body: some View {
@@ -652,7 +650,7 @@ struct FullScreenCoverageRow: View {
 
 // MARK: - Info Card Row
 
-struct InfoCardRow: View {
+private struct InfoCardRow: View {
     let icon: String
     let iconTint: Color
     let title: String
@@ -688,7 +686,7 @@ struct InfoCardRow: View {
     }
 }
 
-struct PresetRow: View {
+private struct PresetRow: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     var body: some View {
@@ -731,7 +729,7 @@ struct PresetRow: View {
     }
 }
 
-struct WindowAccessoryBar: View {
+private struct WindowAccessoryBar: View {
     let openSettings: () -> Void
     let openHelp: () -> Void
 
@@ -792,7 +790,7 @@ struct WindowAccessoryBar: View {
     }
 }
 
-struct InsetGroup<Content: View>: View {
+private struct InsetGroup<Content: View>: View {
     let spacing: CGFloat
     @ViewBuilder var content: Content
 
@@ -804,7 +802,7 @@ struct InsetGroup<Content: View>: View {
     }
 }
 
-struct InsetDivider: View {
+private struct InsetDivider: View {
     var body: some View {
         Rectangle()
             .fill(.primary.opacity(0.08))
@@ -816,7 +814,7 @@ struct InsetDivider: View {
 
 // MARK: - Locked View
 
-struct LockedView: View {
+private struct LockedView: View {
     @ObservedObject var cleaningState: CleaningStateManager
     @State private var pulseAnimation = false
     @State private var errorShake = false
@@ -831,21 +829,7 @@ struct LockedView: View {
                     PulseRings(animating: pulseAnimation, count: 3,
                                baseSize: 130, step: 34, maxOpacity: 0.06)
                     GlassCircle(diameter: 114) {
-                        ZStack {
-                            Image(systemName: "lock.open.fill")
-                                .font(.system(size: 42, weight: .light))
-                                .foregroundStyle(.primary)
-                                .scaleEffect(lockClosed ? 0.5 : 1.0)
-                                .opacity(lockClosed ? 0 : 1)
-                                .accessibilityHidden(true)
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 42, weight: .light))
-                                .foregroundStyle(.primary)
-                                .scaleEffect(lockClosed ? 1.0 : 0.5)
-                                .opacity(lockClosed ? 1 : 0)
-                                .accessibilityHidden(true)
-                        }
-                        .animation(.spring(response: 0.45, dampingFraction: 0.65), value: lockClosed)
+                        LockIconView(closed: lockClosed, size: 42)
                     }
                 }
                 .offset(x: errorShake ? -8 : 0)
@@ -968,7 +952,7 @@ private struct PINKey: View {
     }
 }
 
-struct PINPadView: View {
+private struct PINPadView: View {
     @Binding var entry: String
     let maxLength = 4
     let onComplete: () -> Void
@@ -1048,7 +1032,7 @@ struct PINPadView: View {
 
 // MARK: - Unlock Button (shared by LockedView and OverlayView)
 
-struct UnlockButton: View {
+private struct UnlockButton: View {
     @ObservedObject var cleaningState: CleaningStateManager
     let onFailure: () -> Void
 
@@ -1163,6 +1147,7 @@ struct UnlockButton: View {
     private func submitPIN() {
         if cleaningState.isPINLockedOut {
             updateLockoutMessage()
+            pinEntry = ""
             onFailure()
             return
         }
@@ -1258,6 +1243,7 @@ struct MinimalOverlayView: View {
     @ObservedObject var cleaningState: CleaningStateManager
     @State private var pinEntry = ""
     @State private var pinFailed = false
+    @State private var pinLockoutMessage: String? = nil
 
     var body: some View {
         VStack(spacing: cleaningState.preferredUnlockMethod == .pin ? 14 : 0) {
@@ -1315,10 +1301,16 @@ struct MinimalOverlayView: View {
             }
 
             if cleaningState.preferredUnlockMethod == .pin {
-                PINPadView(entry: $pinEntry, onComplete: submitPIN, onCancel: {
-                    pinEntry = ""
-                    pinFailed = false
-                })
+                PINPadView(
+                    entry: $pinEntry,
+                    onComplete: submitPIN,
+                    onCancel: {
+                        pinEntry = ""
+                        pinFailed = false
+                        pinLockoutMessage = nil
+                    },
+                    lockedOutMessage: pinLockoutMessage
+                )
                 .padding(.bottom, 2)
             }
         }
@@ -1341,11 +1333,24 @@ struct MinimalOverlayView: View {
     }
 
     private func submitPIN() {
+        if cleaningState.isPINLockedOut {
+            if let until = cleaningState.pinLockedUntil {
+                let remaining = max(0, Int(until.timeIntervalSinceNow.rounded(.up)))
+                pinLockoutMessage = "Too many attempts. Try again in \(remaining)s."
+            }
+            pinEntry = ""
+            return
+        }
         if cleaningState.verifyPin(pinEntry) {
             cleaningState.unlockWithVerifiedPIN()
             pinEntry = ""
             pinFailed = false
+            pinLockoutMessage = nil
         } else {
+            if cleaningState.isPINLockedOut, let until = cleaningState.pinLockedUntil {
+                let remaining = max(0, Int(until.timeIntervalSinceNow.rounded(.up)))
+                pinLockoutMessage = "Too many attempts. Try again in \(remaining)s."
+            }
             pinFailed = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 pinEntry = ""
@@ -1379,9 +1384,34 @@ private struct TouchIDKeyNote: View {
     }
 }
 
+// MARK: - Lock Icon (open ↔ closed, animated)
+
+private struct LockIconView: View {
+    let closed: Bool
+    let size: CGFloat
+
+    var body: some View {
+        ZStack {
+            Image(systemName: "lock.open.fill")
+                .font(.system(size: size, weight: .light))
+                .foregroundStyle(.primary)
+                .scaleEffect(closed ? 0.5 : 1.0)
+                .opacity(closed ? 0 : 1)
+                .accessibilityHidden(true)
+            Image(systemName: "lock.fill")
+                .font(.system(size: size, weight: .light))
+                .foregroundStyle(.primary)
+                .scaleEffect(closed ? 1.0 : 0.5)
+                .opacity(closed ? 1 : 0)
+                .accessibilityHidden(true)
+        }
+        .animation(.spring(response: 0.45, dampingFraction: 0.65), value: closed)
+    }
+}
+
 // MARK: - Pulse Rings
 
-struct PulseRings: View {
+private struct PulseRings: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let animating: Bool
     let count: Int
@@ -1417,7 +1447,7 @@ struct PulseRings: View {
 
 /// Liquid-glass orb — uses thin material for maximum transparency.
 /// Specular and rim highlights simulate light from top-left.
-struct GlassCircle<Content: View>: View {
+private struct GlassCircle<Content: View>: View {
     let diameter: CGFloat
     let content: Content
 
@@ -1465,7 +1495,7 @@ struct GlassCircle<Content: View>: View {
 
 // MARK: - Timer Display
 
-struct TimerDisplay: View {
+private struct TimerDisplay: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     var body: some View {
@@ -1501,7 +1531,7 @@ struct TimerDisplay: View {
 
 // MARK: - Accent Button Background (primary CTA)
 
-struct AccentButtonBackground: View {
+private struct AccentButtonBackground: View {
     var body: some View {
         RoundedRectangle(cornerRadius: Design.buttonRadius)
             .fill(Design.accentGradient)
@@ -1516,7 +1546,7 @@ struct AccentButtonBackground: View {
     }
 }
 
-struct GlassPanelBackground: View {
+private struct GlassPanelBackground: View {
     @Environment(\.colorScheme) private var colorScheme
     let cornerRadius: CGFloat
 
@@ -1554,7 +1584,7 @@ struct GlassPanelBackground: View {
     }
 }
 
-struct GlassCapsuleBackground: View {
+private struct GlassCapsuleBackground: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -1585,23 +1615,7 @@ struct GlassCapsuleBackground: View {
     }
 }
 
-// MARK: - Glass Button Background (secondary)
 
-struct GlassButtonBackground: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: Design.buttonRadius).fill(.ultraThinMaterial)
-            RoundedRectangle(cornerRadius: Design.buttonRadius)
-                .fill(LinearGradient(
-                    colors: [.primary.opacity(0.06), .primary.opacity(0.01)],
-                    startPoint: .top, endPoint: .bottom))
-            RoundedRectangle(cornerRadius: Design.buttonRadius)
-                .stroke(LinearGradient(
-                    colors: [.primary.opacity(0.16), .primary.opacity(0.04)],
-                    startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 0.5)
-        }
-    }
-}
 
 // MARK: - Menu Bar View
 
@@ -1634,37 +1648,28 @@ struct MenuBarView: View {
 
         Menu("Open") {
             if cleaningState.menuBarOnly {
-                Button("Show Window") {
-                    NotificationCenter.default.post(name: .menuBarOnlyChanged, object: false)
-                    cleaningState.menuBarOnly = false
-                }
+                Button("Show Window") { showWindow() }
             }
-
-            Button("Settings…") {
-                NotificationCenter.default.post(name: .menuBarOnlyChanged, object: false)
-                cleaningState.menuBarOnly = false
-                NotificationCenter.default.post(name: .openSettingsRequested, object: nil)
-            }
-            Button("Diagnostics…") {
-                NotificationCenter.default.post(name: .menuBarOnlyChanged, object: false)
-                cleaningState.menuBarOnly = false
-                NotificationCenter.default.post(name: .openDiagnosticsRequested, object: nil)
-            }
-            Button("Help…") {
-                NotificationCenter.default.post(name: .menuBarOnlyChanged, object: false)
-                cleaningState.menuBarOnly = false
-                NotificationCenter.default.post(name: .openHelpRequested, object: nil)
-            }
+            Button("Settings…")    { showWindow(then: .openSettingsRequested) }
+            Button("Diagnostics…") { showWindow(then: .openDiagnosticsRequested) }
+            Button("Help…")        { showWindow(then: .openHelpRequested) }
         }
 
         Divider()
         Button("Quit Keyboard Cleaner") { NSApplication.shared.terminate(nil) }
     }
+
+    private func showWindow(then name: Notification.Name? = nil) {
+        cleaningState.menuBarOnly = false
+        if let name {
+            NotificationCenter.default.post(name: name, object: nil)
+        }
+    }
 }
 
 // MARK: - Background (main window — adapts to light / dark mode)
 
-struct AquaBackgroundView: View {
+private struct AquaBackgroundView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @State private var phase: CGFloat = 0
@@ -1727,7 +1732,7 @@ struct AquaBackgroundView: View {
 
 // MARK: - Overlay Background (full-screen lock)
 
-struct OverlayBackgroundView: View {
+private struct OverlayBackgroundView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var phase: CGFloat = 0
 
@@ -1753,7 +1758,7 @@ struct OverlayBackgroundView: View {
                 phase = 0
                 return
             }
-            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
+            withAnimation(.linear(duration: Timing.background).repeatForever(autoreverses: false)) {
                 phase = .pi * 2
             }
         }
@@ -1772,7 +1777,6 @@ struct OverlayView: View {
         ZStack {
             OverlayBackgroundView()
 
-            // Scrollable top content — bottom padding reserves room for the fixed unlock section
             VStack(spacing: 0) {
                 Spacer()
 
@@ -1780,21 +1784,7 @@ struct OverlayView: View {
                     PulseRings(animating: pulseAnimation, count: 3,
                                baseSize: 150, step: 46, maxOpacity: 0.05)
                     GlassCircle(diameter: 130) {
-                        ZStack {
-                            Image(systemName: "lock.open.fill")
-                                .font(.system(size: 48, weight: .light))
-                                .foregroundStyle(.primary)
-                                .scaleEffect(lockClosed ? 0.5 : 1.0)
-                                .opacity(lockClosed ? 0 : 1)
-                                .accessibilityHidden(true)
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 48, weight: .light))
-                                .foregroundStyle(.primary)
-                                .scaleEffect(lockClosed ? 1.0 : 0.5)
-                                .opacity(lockClosed ? 1 : 0)
-                                .accessibilityHidden(true)
-                        }
-                        .animation(.spring(response: 0.45, dampingFraction: 0.65), value: lockClosed)
+                        LockIconView(closed: lockClosed, size: 48)
                     }
                 }
                 .onAppear {
@@ -1849,13 +1839,7 @@ struct OverlayView: View {
                 .padding(.horizontal, 32)
                 .accessibilitySortPriority(2)
 
-                Spacer(minLength: 180)  // guarantees space for the pinned bottom section
-            }
-            .frame(maxWidth: .infinity)
-
-            // Bottom section pinned to screen regardless of top content height
-            VStack(spacing: 0) {
-                Spacer()
+                Spacer(minLength: 32)
 
                 VStack(spacing: 14) {
                     UnlockButton(cleaningState: cleaningState, onFailure: triggerErrorShake)
@@ -1876,8 +1860,9 @@ struct OverlayView: View {
                 .padding(.vertical, 20)
                 .background(GlassPanelBackground(cornerRadius: 28))
                 .padding(.horizontal, 28)
-                .padding(.bottom, 40)
                 .accessibilitySortPriority(1)
+
+                Spacer(minLength: 40)
             }
             .frame(maxWidth: .infinity)
         }
@@ -1892,7 +1877,7 @@ struct OverlayView: View {
 
 // MARK: - Countdown Ring View
 
-struct CountdownRingView: View {
+private struct CountdownRingView: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     private var progress: Double {
@@ -1961,7 +1946,7 @@ struct CountdownRingView: View {
 
 // MARK: - Overlay Elapsed View (when auto-unlock is off)
 
-struct OverlayElapsedView: View {
+private struct OverlayElapsedView: View {
     @ObservedObject var cleaningState: CleaningStateManager
 
     var body: some View {
@@ -1991,7 +1976,7 @@ extension Animation {
 
 // MARK: - Onboarding
 
-struct OnboardingView: View {
+private struct OnboardingView: View {
     @EnvironmentObject private var cleaningState: CleaningStateManager
     @Binding var hasSeenOnboarding: Bool
     @State private var currentPage = 0
@@ -2098,7 +2083,7 @@ struct OnboardingView: View {
     }
 }
 
-struct OnboardingPage: View {
+private struct OnboardingPage: View {
     let icon: String
     let title: String
     let subtitle: String
@@ -2137,15 +2122,14 @@ struct OnboardingPage: View {
 
 // MARK: - Settings Sheet
 
-struct SettingsSheet: View {
+private struct SettingsSheet: View {
     @ObservedObject var cleaningState: CleaningStateManager
-    @Environment(\.dismiss) private var dismiss
-    @State private var showPINSetup = false
-    @State private var showDiagnostics = false
+    @State private var showPINSetup  = false
+    @State private var showDiagnostics  = false
 
     var body: some View {
         VStack(spacing: 0) {
-            sheetHeader(title: "Settings") {
+            SheetHeaderView(title: "Settings", subtitle: nil) {
                 Button {
                     showDiagnostics = true
                 } label: {
@@ -2256,13 +2240,12 @@ struct SettingsSheet: View {
     }
 }
 
-struct DiagnosticsSheet: View {
+private struct DiagnosticsSheet: View {
     @ObservedObject var cleaningState: CleaningStateManager
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
-            sheetHeader(title: "Diagnostics")
+            SheetHeaderView(title: "Diagnostics", subtitle: nil) { EmptyView() }
 
             List {
                 Section {
@@ -2275,7 +2258,7 @@ struct DiagnosticsSheet: View {
                                 .fontWeight(.semibold)
                         }
                         .accessibilityElement(children: .combine)
-                        .accessibilityLabel("\(item.label): \(item.value)")
+                        .accessibilityLabel(AppStrings.diagnosticsRow(item.label, item.value))
                     }
                 }
             }
@@ -2289,16 +2272,15 @@ struct DiagnosticsSheet: View {
     }
 }
 
-struct HelpSheet: View {
+private struct HelpSheet: View {
     @ObservedObject var cleaningState: CleaningStateManager
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
-            sheetHeader(
+            SheetHeaderView(
                 title: "Help",
                 subtitle: "How to lock, unlock, and troubleshoot Keyboard Cleaner."
-            )
+            ) { EmptyView() }
 
             List {
                 helpSectionList(title: "Start a Cleaning Session", items: [
@@ -2378,54 +2360,44 @@ struct HelpSheet: View {
     }
 }
 
-private extension View {
-    func sheetHeader(title: String, subtitle: String? = nil, @ViewBuilder trailing: () -> some View = { EmptyView() }) -> some View {
-        modifier(SheetHeaderModifier(title: title, subtitle: subtitle, trailing: AnyView(trailing())))
-    }
-}
-
-private struct SheetHeaderModifier: ViewModifier {
+private struct SheetHeaderView<Trailing: View>: View {
     @Environment(\.dismiss) private var dismiss
 
     let title: String
     let subtitle: String?
-    let trailing: AnyView
+    @ViewBuilder let trailing: Trailing
 
-    func body(content: Content) -> some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(.primary)
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.system(size: 12))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                Spacer()
-                HStack(spacing: 10) {
-                    trailing
-                    Button("Done") { dismiss() }
-                        .buttonStyle(.plain)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Design.accentEnd)
-                        .keyboardShortcut(.cancelAction)
+    var body: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.primary)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 12)
-
-            content
+            Spacer()
+            HStack(spacing: 10) {
+                trailing
+                Button("Done") { dismiss() }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Design.accentEnd)
+                    .keyboardShortcut(.cancelAction)
+            }
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 18)
+        .padding(.bottom, 12)
     }
 }
 
 // MARK: - PIN Setup Sheet
 
-struct PINSetupSheet: View {
+private struct PINSetupSheet: View {
     @ObservedObject var cleaningState: CleaningStateManager
     @Environment(\.dismiss) private var dismiss
     @State private var step: SetupStep = .enter
@@ -2505,7 +2477,7 @@ struct PINSetupSheet: View {
     }
 }
 
-struct SettingsRow<Control: View>: View {
+private struct SettingsRow<Control: View>: View {
     let icon: String
     let iconTint: Color
     let title: String
