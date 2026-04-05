@@ -1785,16 +1785,6 @@ private struct CountdownRingView: View {
                 }
             }
 
-            HStack(spacing: 5) {
-                Image(systemName: "clock")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.tertiary)
-                    .accessibilityHidden(true)
-                Text(AppStrings.lockedFor(cleaningState.elapsedTimeString))
-                    .font(.system(size: 12, design: .rounded).monospacedDigit())
-                    .foregroundStyle(.tertiary)
-            }
-            .accessibilityLabel(AppStrings.lockedFor(cleaningState.elapsedTimeString))
         }
     }
 }

@@ -39,8 +39,8 @@ enum AutoUnlockTimeout: Int, CaseIterable, Identifiable {
 // MARK: - Overlay Style
 
 enum OverlayStyle: String, CaseIterable, Identifiable {
-    case full    = "full"
     case minimal = "minimal"
+    case full    = "full"
 
     var id: String { rawValue }
 
