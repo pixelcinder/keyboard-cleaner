@@ -402,6 +402,31 @@
       line-height: 1.7;
     }
 
+    /* ── GATEKEEPER NOTE ── */
+    .gatekeeper-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-top: 48px;
+      padding: 18px 22px;
+      border-radius: 14px;
+      background: rgba(20,153,204,0.08);
+      border: 1px solid rgba(20,153,204,0.20);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .gatekeeper-note a {
+      color: var(--accent-end);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .gatekeeper-note a:hover { text-decoration: underline; }
+
+    .gatekeeper-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+
     /* ── HOW IT WORKS ── */
     .steps {
       display: grid;
@@ -693,6 +718,13 @@
     <div class="section-label">How it works</div>
     <h2 class="section-title">Four steps, zero accidents</h2>
     <p class="section-sub">No configuration, no fuss. One tap is all it takes to get a fully locked keyboard ready for a deep clean.</p>
+
+    <div class="gatekeeper-note">
+      <div class="gatekeeper-icon">🔐</div>
+      <div>
+        <strong>First launch only —</strong> macOS may block the app since it's not from the App Store. Right-click it and choose <strong>Open</strong>, then confirm to proceed. <a href="https://support.apple.com/en-ie/guide/mac-help/mh40616/mac" target="_blank" rel="noopener">Apple's guide →</a>
+      </div>
+    </div>
 
     <div class="steps">
       <div class="step-card">
