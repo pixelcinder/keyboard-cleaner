@@ -1,30 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script>
-    (function () {
-      var path = window.location.pathname;
-      var isRootPath = path === "/" || /\/keyboard-cleaner\/?$/.test(path);
-      var isFrenchPath = /\/fr\/?$/.test(path);
-      var language = (navigator.language || navigator.userLanguage || "").toLowerCase();
-
-      if (isRootPath && !isFrenchPath && language.indexOf("fr") === 0) {
-        var destination = path.replace(/\/?$/, "/fr/");
-        window.location.replace(destination + window.location.search + window.location.hash);
-      }
-    }());
-  </script>
-  <title>Keyboard Cleaner — Lock your Mac keyboard while you clean it</title>
-  <meta name="description" content="Free Mac app that locks your keyboard while you clean it. One tap blocks every keystroke. Unlock with Touch ID or PIN when you're done." />
+  <title>Keyboard Cleaner — Verrouillez le clavier de votre Mac pendant le nettoyage</title>
+  <meta name="description" content="App Mac gratuite qui verrouille votre clavier pendant le nettoyage. Un clic bloque toutes les touches. Déverrouillez avec Touch ID ou un code PIN quand vous avez fini." />
   <meta property="og:type"        content="website" />
-  <meta property="og:title"       content="Keyboard Cleaner — Lock your Mac keyboard while you clean it" />
-  <meta property="og:description" content="Free Mac app that locks your keyboard while you clean it. One tap blocks every keystroke. Unlock with Touch ID or PIN when you're done." />
-  <meta property="og:url"         content="https://xander006.github.io/keyboard-cleaner/" />
+  <meta property="og:title"       content="Keyboard Cleaner — Verrouillez le clavier de votre Mac pendant le nettoyage" />
+  <meta property="og:description" content="App Mac gratuite qui verrouille votre clavier pendant le nettoyage. Un clic bloque toutes les touches. Déverrouillez avec Touch ID ou un code PIN quand vous avez fini." />
+  <meta property="og:url"         content="https://xander006.github.io/keyboard-cleaner/fr/" />
   <meta name="twitter:card"        content="summary" />
-  <meta name="twitter:title"       content="Keyboard Cleaner — Lock your Mac keyboard while you clean it" />
-  <meta name="twitter:description" content="Free Mac app. Lock keyboard, clean every key, unlock with Touch ID." />
+  <meta name="twitter:title"       content="Keyboard Cleaner — Verrouillez le clavier de votre Mac pendant le nettoyage" />
+  <meta name="twitter:description" content="App Mac gratuite. Verrouillez le clavier, nettoyez chaque touche, déverrouillez avec Touch ID." />
   <link rel="alternate" hreflang="en" href="https://xander006.github.io/keyboard-cleaner/" />
   <link rel="alternate" hreflang="fr" href="https://xander006.github.io/keyboard-cleaner/fr/" />
   <link rel="alternate" hreflang="x-default" href="https://xander006.github.io/keyboard-cleaner/" />
@@ -57,7 +44,6 @@
       overflow-x: hidden;
     }
 
-    /* Ambient blobs */
     body::before, body::after {
       content: '';
       position: fixed;
@@ -83,7 +69,6 @@
 
     nav, section, footer, .hero { position: relative; z-index: 1; }
 
-    /* ── NAV ── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -144,7 +129,6 @@
     }
     .nav-links a:hover { color: var(--text); }
 
-    /* Hamburger — mobile only */
     .nav-hamburger {
       display: none;
       flex-direction: column;
@@ -185,7 +169,6 @@
     }
     .nav-mobile a:last-child { border-bottom: none; }
 
-    /* ── BUTTONS ── */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -213,7 +196,6 @@
       border: 1px solid rgba(0,0,0,0.10);
     }
 
-    /* Download icon */
     .ico-download {
       width: 14px; height: 14px;
       display: inline-block;
@@ -240,7 +222,6 @@
       border-radius: 1px;
     }
 
-    /* ── HERO ── */
     .hero {
       min-height: 100vh;
       display: flex;
@@ -298,7 +279,6 @@
       justify-content: center;
     }
 
-    /* Mockup */
     .hero-visual {
       margin-top: 72px;
       display: flex;
@@ -403,7 +383,6 @@
       box-shadow: 0 6px 24px rgba(56,204,163,0.28);
     }
 
-    /* ── SECTIONS ── */
     section { padding: 96px 24px; }
     .container { max-width: 1080px; margin: 0 auto; }
 
@@ -419,7 +398,6 @@
       font-size: 17px; color: var(--muted); max-width: 540px; line-height: 1.7;
     }
 
-    /* ── STEPS ── */
     .steps {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -445,7 +423,6 @@
     .step-card h3 { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 10px; }
     .step-card p  { font-size: 14px; color: var(--muted); line-height: 1.7; }
 
-    /* ── FEATURES ── */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -461,7 +438,6 @@
     }
     .feature-card:hover { border-color: rgba(56,204,163,0.25); transform: translateY(-2px); }
 
-    /* SVG-style icon boxes */
     .feature-icon {
       width: 46px; height: 46px;
       border-radius: 14px;
@@ -477,10 +453,8 @@
     .feature-card h3 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 8px; }
     .feature-card p  { font-size: 14px; color: var(--muted); line-height: 1.7; }
 
-    /* ── DIVIDER ── */
     .divider { border: none; border-top: 1px solid var(--border); margin: 0 auto; max-width: 1080px; }
 
-    /* ── CTA ── */
     .cta-section { text-align: center; padding: 96px 24px 120px; }
     .cta-card {
       max-width: 680px; margin: 0 auto;
@@ -509,14 +483,12 @@
     }
     .bmc-wrap p { font-size: 13px; color: var(--muted); }
 
-    /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
       padding: 28px 48px;
     }
     footer p { font-size: 13px; color: rgba(17,19,24,0.35); text-align: center; font-weight: 600; }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 640px) {
       nav { padding: 14px 20px; }
       .nav-links, .nav-cta { display: none; }
@@ -529,50 +501,47 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a class="nav-logo" href="#">
     <div class="icon">⌨️</div>
     Keyboard Cleaner
-    <span class="nav-beta">Beta</span>
+    <span class="nav-beta">Bêta</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#how-it-works">How it works</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#download">Download</a></li>
+    <li><a href="#how-it-works">Comment ça marche</a></li>
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#download">Télécharger</a></li>
   </ul>
-  <a class="btn btn-primary nav-cta" href="#download">Download free</a>
+  <a class="btn btn-primary nav-cta" href="#download">Télécharger gratuitement</a>
   <button class="nav-hamburger" onclick="document.getElementById('navMobile').classList.toggle('open')" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
 
-<!-- Mobile nav -->
 <div class="nav-mobile" id="navMobile">
-  <a href="#how-it-works" onclick="document.getElementById('navMobile').classList.remove('open')">How it works</a>
-  <a href="#features"     onclick="document.getElementById('navMobile').classList.remove('open')">Features</a>
-  <a href="#download"     onclick="document.getElementById('navMobile').classList.remove('open')">Download</a>
+  <a href="#how-it-works" onclick="document.getElementById('navMobile').classList.remove('open')">Comment ça marche</a>
+  <a href="#features" onclick="document.getElementById('navMobile').classList.remove('open')">Fonctionnalités</a>
+  <a href="#download" onclick="document.getElementById('navMobile').classList.remove('open')">Télécharger</a>
 </div>
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">✦ Free</div>
+  <div class="hero-badge">✦ Gratuit</div>
 
   <h1>
-    Clean every key<br>
-    <span class="gradient-text">without a single misclick</span>
+    Nettoyez chaque touche<br>
+    <span class="gradient-text">sans la moindre fausse manipulation</span>
   </h1>
 
   <p class="hero-sub">
-    Lock your keyboard in one tap — every keystroke blocked, every key safe to wipe. Unlock with Touch ID when you're done.
+    Verrouillez votre clavier en un clic : toutes les frappes sont bloquées et chaque touche peut être nettoyée en sécurité. Déverrouillez avec Touch ID quand vous avez terminé.
   </p>
 
   <div class="hero-actions">
     <a class="btn btn-primary" href="#download">
       <span class="ico-download"></span>
-      Download for Mac
+      Télécharger pour Mac
     </a>
-    <a class="btn btn-ghost" href="#how-it-works">How it works</a>
+    <a class="btn btn-ghost" href="#how-it-works">Comment ça marche</a>
   </div>
 
   <div class="hero-visual">
@@ -588,25 +557,25 @@
           <svg viewBox="0 0 160 160">
             <defs>
               <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stop-color="#38CCA3"/>
+                <stop offset="0%" stop-color="#38CCA3"/>
                 <stop offset="100%" stop-color="#1499CC"/>
               </linearGradient>
             </defs>
-            <circle class="ring-track"    cx="80" cy="80" r="65"/>
+            <circle class="ring-track" cx="80" cy="80" r="65"/>
             <circle class="ring-progress" cx="80" cy="80" r="65"/>
           </svg>
           <div class="mockup-lock-center">
             <div class="mockup-lock-icon">🔒</div>
             <div class="mockup-countdown">3:42</div>
-            <div class="mockup-countdown-label">remaining</div>
+            <div class="mockup-countdown-label">restant</div>
           </div>
         </div>
         <div class="mockup-locked-title">
-          <span class="dim">Keyboard</span>
-          <span class="bold">Locked</span>
+          <span class="dim">Clavier</span>
+          <span class="bold">Verrouillé</span>
         </div>
-        <div class="mockup-pill">✦ &nbsp; Wipe with confidence</div>
-        <button class="mockup-unlock-btn">Touch ID to Unlock</button>
+        <div class="mockup-pill">✦ &nbsp; Nettoyez en toute confiance</div>
+        <button class="mockup-unlock-btn">Touch ID pour déverrouiller</button>
       </div>
     </div>
   </div>
@@ -614,33 +583,32 @@
 
 <hr class="divider" />
 
-<!-- HOW IT WORKS -->
 <section id="how-it-works">
   <div class="container">
-    <div class="section-label">How it works</div>
-    <h2 class="section-title">Up and running in minutes</h2>
-    <p class="section-sub">Grant permission once, then it's one tap away every time you need it.</p>
+    <div class="section-label">Comment ça marche</div>
+    <h2 class="section-title">Prêt en quelques minutes</h2>
+    <p class="section-sub">Accordez l’autorisation une seule fois, puis tout se fait en un clic quand vous en avez besoin.</p>
 
     <div class="steps">
       <div class="step-card">
         <div class="step-number">1</div>
-        <h3>Grant Accessibility Access</h3>
-        <p>On first launch, grant one-time Accessibility permission in System Settings. This is how the app intercepts keystrokes — nothing else is accessed.</p>
+        <h3>Autorisez l’accès Accessibilité</h3>
+        <p>Au premier lancement, accordez l’autorisation Accessibilité dans Réglages Système. C’est ainsi que l’app intercepte les frappes, sans accéder à autre chose.</p>
       </div>
       <div class="step-card">
         <div class="step-number">2</div>
-        <h3>Lock your keyboard</h3>
-        <p>Hit the Lock button or press <strong>⌃⌘L</strong> from anywhere on your Mac. Every key is blocked instantly.</p>
+        <h3>Verrouillez votre clavier</h3>
+        <p>Appuyez sur le bouton de verrouillage ou utilisez <strong>⌃⌘L</strong> depuis n’importe où sur votre Mac. Toutes les touches sont bloquées instantanément.</p>
       </div>
       <div class="step-card">
         <div class="step-number">3</div>
-        <h3>Clean freely</h3>
-        <p>Scrub every key as hard as you like. Nothing gets through — no accidental inputs, no opened apps, no typed text.</p>
+        <h3>Nettoyez librement</h3>
+        <p>Frottez chaque touche autant que vous voulez. Rien ne passe : aucune saisie accidentelle, aucune app ouverte, aucun texte tapé.</p>
       </div>
       <div class="step-card">
         <div class="step-number">4</div>
-        <h3>Unlock with Touch ID</h3>
-        <p>One finger on Touch ID and you're back. Or use the on-screen PIN pad with your mouse — no keyboard needed.</p>
+        <h3>Déverrouillez avec Touch ID</h3>
+        <p>Un doigt sur Touch ID et c’est reparti. Vous pouvez aussi utiliser le pavé PIN à l’écran avec la souris, sans clavier.</p>
       </div>
     </div>
   </div>
@@ -648,43 +616,42 @@
 
 <hr class="divider" />
 
-<!-- FEATURES -->
 <section id="features">
   <div class="container">
-    <div class="section-label">Features</div>
-    <h2 class="section-title">Everything you need,<br>nothing you don't</h2>
-    <p class="section-sub">Built for macOS — native, lightweight, and designed to stay out of your way.</p>
+    <div class="section-label">Fonctionnalités</div>
+    <h2 class="section-title">Tout ce qu’il faut,<br>rien de superflu</h2>
+    <p class="section-sub">Conçu pour macOS : natif, léger et pensé pour se faire oublier.</p>
 
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon tint-a">⌨</div>
-        <h3>Total keyboard block</h3>
-        <p>Every keystroke — letters, shortcuts, function keys — is intercepted before it reaches any app. System-wide and instant.</p>
+        <h3>Blocage total du clavier</h3>
+        <p>Toutes les frappes, lettres, raccourcis et touches de fonction, sont interceptées avant d’atteindre n’importe quelle app. Immédiat et à l’échelle du système.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon tint-b">⁃</div>
-        <h3>Touch ID unlock</h3>
-        <p>The fastest way back. One touch on the sensor and your keyboard is live again in under a second.</p>
+        <h3>Déverrouillage Touch ID</h3>
+        <p>Le moyen le plus rapide de revenir à l’action. Une pression sur le capteur et votre clavier redevient actif en moins d’une seconde.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon tint-a">#</div>
-        <h3>PIN fallback</h3>
-        <p>Set a 4-digit PIN as a backup. The on-screen numpad is fully mouse-clickable — no keyboard needed to unlock.</p>
+        <h3>PIN de secours</h3>
+        <p>Définissez un code PIN à 4 chiffres en solution de secours. Le pavé numérique à l’écran est entièrement cliquable à la souris, sans clavier.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon tint-b">◷</div>
-        <h3>Auto-unlock timer</h3>
-        <p>Set a countdown and walk away. A live ring shows the time remaining and the keyboard unlocks automatically when it hits zero.</p>
+        <h3>Minuteur de déverrouillage</h3>
+        <p>Définissez un compte à rebours et éloignez-vous. Un anneau en direct indique le temps restant et le clavier se déverrouille automatiquement à zéro.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon tint-a">▣</div>
-        <h3>Full-screen overlay</h3>
-        <p>A full-screen cover prevents accidental clicks while you clean. Covers all displays at once.</p>
+        <h3>Overlay plein écran</h3>
+        <p>Un écran de protection plein écran évite les clics accidentels pendant le nettoyage. Il couvre tous les écrans à la fois.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon tint-b">≡</div>
-        <h3>Menu bar control</h3>
-        <p>Lock straight from the menu bar without switching apps. The icon shows your lock state at a glance.</p>
+        <h3>Contrôle depuis la barre des menus</h3>
+        <p>Verrouillez directement depuis la barre des menus, sans changer d’app. L’icône indique immédiatement l’état du verrouillage.</p>
       </div>
     </div>
   </div>
@@ -692,29 +659,28 @@
 
 <hr class="divider" />
 
-<!-- DOWNLOAD -->
 <section class="cta-section" id="download">
   <div class="cta-card">
     <div class="cta-glow"></div>
-    <h2>Your keyboard deserves a proper clean.</h2>
-    <p>Free, no account, no subscription — download and you're ready in under a minute.</p>
+    <h2>Votre clavier mérite un vrai nettoyage.</h2>
+    <p>Gratuit, sans compte, sans abonnement : téléchargez et tout est prêt en moins d’une minute.</p>
     <div class="cta-actions">
       <a class="btn btn-primary" href="https://github.com/Xander006/keyboard-cleaner/releases/download/v1.0/KeyboardCleaner.dmg" download>
         <span class="ico-download"></span>
-        Download .dmg
+        Télécharger le .dmg
       </a>
       <a class="btn btn-ghost" href="https://github.com/Xander006/keyboard-cleaner" target="_blank" rel="noopener">
-        View on GitHub
+        Voir sur GitHub
       </a>
     </div>
     <p class="system-req">
-      macOS 14 Sonoma or later &nbsp;·&nbsp; Apple Silicon &amp; Intel<br>
-      Requires one-time Accessibility permission &nbsp;·&nbsp;
-      <a href="https://support.apple.com/en-ie/guide/mac-help/mh40616/mac" target="_blank" rel="noopener" style="color:var(--accent-end);text-decoration:none;font-weight:600;">Gatekeeper guide →</a>
+      macOS 14 Sonoma ou version ultérieure &nbsp;·&nbsp; Apple Silicon et Intel<br>
+      Nécessite une autorisation Accessibilité unique &nbsp;·&nbsp;
+      <a href="https://support.apple.com/fr-fr/guide/mac-help/mh40616/mac" target="_blank" rel="noopener" style="color:var(--accent-end);text-decoration:none;font-weight:600;">Guide Gatekeeper →</a>
     </p>
 
     <div class="bmc-wrap">
-      <p>If you find it useful, a coffee would make my day ☕</p>
+      <p>Si ça vous est utile, un café me ferait très plaisir ☕</p>
       <a href="https://www.buymeacoffee.com/keyboardcleaner" target="_blank" rel="noopener">
         <img src="https://cdn.buymeacoffee.com/buttons/v2/default-green.png" alt="Buy Me a Coffee" style="height:60px !important;width:217px !important;" />
       </a>
@@ -722,9 +688,8 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <p>Made with ❤️ in Ireland.</p>
+  <p>Fabriqué avec ❤️ en Irlande.</p>
 </footer>
 
 </body>
