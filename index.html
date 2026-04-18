@@ -8,10 +8,12 @@
       var path = window.location.pathname;
       var isRootPath = path === "/" || /\/keyboard-cleaner\/?$/.test(path);
       var isFrenchPath = /\/fr\/?$/.test(path);
+      var isSpanishPath = /\/es\/?$/.test(path);
       var language = (navigator.language || navigator.userLanguage || "").toLowerCase();
 
-      if (isRootPath && !isFrenchPath && language.indexOf("fr") === 0) {
-        var destination = path.replace(/\/?$/, "/fr/");
+      if (isRootPath && !isFrenchPath && !isSpanishPath && (language.indexOf("fr") === 0 || language.indexOf("es") === 0)) {
+        var localePath = language.indexOf("fr") === 0 ? "/fr/" : "/es/";
+        var destination = path.replace(/\/?$/, localePath);
         window.location.replace(destination + window.location.search + window.location.hash);
       }
     }());
@@ -27,6 +29,7 @@
   <meta name="twitter:description" content="Free Mac app. Lock keyboard, clean every key, unlock with Touch ID." />
   <link rel="alternate" hreflang="en" href="https://pixelcinder.github.io/keyboard-cleaner/" />
   <link rel="alternate" hreflang="fr" href="https://pixelcinder.github.io/keyboard-cleaner/fr/" />
+  <link rel="alternate" hreflang="es" href="https://pixelcinder.github.io/keyboard-cleaner/es/" />
   <link rel="alternate" hreflang="x-default" href="https://pixelcinder.github.io/keyboard-cleaner/" />
 
   <style>
