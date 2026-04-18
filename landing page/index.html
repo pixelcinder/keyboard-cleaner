@@ -474,6 +474,15 @@
       font-weight: 700;
       line-height: 1;
     }
+    .feature-icon.touch-id svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .tint-a { background: rgba(56,204,163,0.14); color: #2aaa84; }
     .tint-b { background: rgba(20,153,204,0.14); color: #1180b3; }
 
@@ -665,7 +674,16 @@
         <p>Every keystroke — letters, shortcuts, function keys — is intercepted before it reaches any app. System-wide and instant.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon tint-b">⁃</div>
+        <div class="feature-icon tint-b touch-id" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3.5c4.3 0 7.5 3.2 7.5 7.6V16" />
+            <path d="M12 6.6c2.7 0 4.8 2 4.8 4.8v3.3" />
+            <path d="M12 9.7c1.4 0 2.5 1.1 2.5 2.5v1.9" />
+            <path d="M12 9.7c-1.4 0-2.5 1.1-2.5 2.5v1.9" />
+            <path d="M6.5 16v-4.9c0-4.4 3.2-7.6 7.5-7.6" />
+            <path d="M12 13.1V20.5" />
+          </svg>
+        </div>
         <h3>Unlock with Touch ID</h3>
         <p>The fastest way back. One touch on the sensor and your keyboard is active again in under a second.</p>
       </div>
@@ -724,11 +742,6 @@
     </div>
   </div>
 </section>
-
-<!-- FOOTER -->
-<footer>
-  <p>Built in Ireland.</p>
-</footer>
 
 </body>
 </html>
