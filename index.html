@@ -567,6 +567,7 @@
     .system-req-chip {
       display: inline-flex;
       align-items: center;
+      gap: 10px;
       padding: 9px 12px;
       border-radius: 999px;
       background: rgba(17,19,24,0.04);
@@ -579,6 +580,15 @@
     .system-req-chip strong {
       color: var(--text);
       font-weight: 700;
+    }
+    .system-req-chip span {
+      color: rgba(17,19,24,0.56);
+      font-weight: 600;
+    }
+    .system-req-chip span::before {
+      content: "·";
+      margin-right: 8px;
+      color: rgba(17,19,24,0.28);
     }
     .system-req-warning {
       display: flex;
@@ -849,7 +859,7 @@
     </div>
     <div class="system-req">
       <div class="system-req-meta">
-        <div class="system-req-chip"><strong>macOS 14 Sonoma+</strong> Apple Silicon &amp; Intel</div>
+        <div class="system-req-chip"><strong>macOS 14 Sonoma+</strong><span>Apple Silicon &amp; Intel</span></div>
       </div>
       <div class="system-req-warning">
         <div><strong>Not code-signed yet (beta).</strong> macOS will block the first launch with Gatekeeper. Go to <strong>Apple menu &gt; System Settings &gt; Privacy &amp; Security</strong>, then use <strong>Open Anyway</strong> in the <strong>Security</strong> section. This option is available for about one hour after the blocked launch.</div>
